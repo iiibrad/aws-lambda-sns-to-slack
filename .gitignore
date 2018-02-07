@@ -4,3 +4,4 @@
 config.json
 venv
 sns-to-slack.zip
+.env
