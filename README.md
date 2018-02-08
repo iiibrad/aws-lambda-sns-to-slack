@@ -56,6 +56,14 @@ In the meantime, a simplistic test is:
 python lambda_function.py
 ```
 
+Set the following environment variables, and make sure your AWS CLI is configured properly:
+
+```shell
+export AWS_REGION=<whatever region you set up your KMZ in>
+export AWS_ACCOUNT_ID=<your AWS account ID>
+export TOPIC_NAME=<the SNS topic name you want to test>
+```
+
 The Lambda Function can be named whatever you like.
 Installing/updating the Lambda Function can be done using the AWS CLI.
 There are [more](https://github.com/gene1wood/cfnlambda) [Pythonic](https://github.com/PitchBook/pylambda) ways of doing so however.

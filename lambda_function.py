@@ -216,37 +216,72 @@ def lambda_handler(event, context):
 
 # Test locally
 if __name__ == '__main__':
-    sns_event_template = json.loads(r"""
-{
-  "Records": [
-    {
-      "EventVersion": "1.0",
-      "EventSubscriptionArn": "arn:aws:sns:EXAMPLE",
-      "EventSource": "aws:sns",
-      "Sns": {
-        "SignatureVersion": "1",
-        "Timestamp": "1970-01-01T00:00:00.000Z",
-        "Signature": "EXAMPLE",
-        "SigningCertUrl": "EXAMPLE",
-        "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
-        "Message": "{\"AlarmName\":\"sns-slack-test-from-cloudwatch-total-cpu\",\"AlarmDescription\":null,\"AWSAccountId\":\"123456789012\",\"NewStateValue\":\"OK\",\"NewStateReason\":\"Threshold Crossed: 1 datapoint (7.9053535353535365) was not greater than or equal to the threshold (8.0).\",\"StateChangeTime\":\"2015-11-09T21:19:43.454+0000\",\"Region\":\"US - N. Virginia\",\"OldStateValue\":\"ALARM\",\"Trigger\":{\"MetricName\":\"CPUUtilization\",\"Namespace\":\"AWS/EC2\",\"Statistic\":\"AVERAGE\",\"Unit\":null,\"Dimensions\":[],\"Period\":300,\"EvaluationPeriods\":1,\"ComparisonOperator\":\"GreaterThanOrEqualToThreshold\",\"Threshold\":8.0}}",
-        "MessageAttributes": {
-          "Test": {
-            "Type": "String",
-            "Value": "TestString"
-          },
-          "TestBinary": {
-            "Type": "Binary",
-            "Value": "TestBinary"
-          }
-        },
-        "Type": "Notification",
-        "UnsubscribeUrl": "EXAMPLE",
-        "TopicArn": "arn:aws:sns:us-east-1:123456789012:production-notices",
-        "Subject": "OK: sns-slack-test-from-cloudwatch-total-cpu"
-      }
+    if 'AWS_REGION' in os.environ:
+        AWS_REGION = os.getenv('AWS_REGION')
+    else:
+        AWS_REGION = "us-east-1"
+    AWS_ACCOUNT_ID = os.getenv('AWS_ACCOUNT_ID')
+    TOPIC_NAME = os.getenv('TOPIC_NAME')
+    topic_ARN = "arn:aws:sns:{0}:{1}:{2}".format(
+        AWS_REGION,
+        AWS_ACCOUNT_ID,
+        TOPIC_NAME
+    )
+    sns_event_template = {
+        "Records": [
+            {
+                "EventVersion": "1.0",
+                "EventSubscriptionArn": topic_ARN,
+                "EventSource": "aws:sns",
+                "Sns": {
+                    "SignatureVersion": "1",
+                    "Timestamp": "1970-01-01T00:00:00.000Z",
+                    "Signature": "EXAMPLE",
+                    "SigningCertUrl": "EXAMPLE",
+                    "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
+                    "Message": json.dumps({
+                        "AlarmName":
+                        "sns-slack-test-from-cloudwatch-total-cpu",
+                        "AlarmDescription": None,
+                        "AWSAccountId": AWS_ACCOUNT_ID,
+                        "NewStateValue": "OK",
+                        "NewStateReason":
+                        "Threshold Crossed: 1 datapoint (7.9053535353535365) "
+                        "was not greater than or equal to the threshold "
+                        "(8.0).",
+                        "StateChangeTime": "2015-11-09T21:19:43.454+0000",
+                        "Region": "US - N. Virginia",
+                        "OldStateValue": "ALARM",
+                        "Trigger": {
+                            "MetricName": "CPUUtilization",
+                            "Namespace": "AWS/EC2",
+                            "Statistic": "AVERAGE",
+                            "Unit": None,
+                            "Dimensions": [],
+                            "Period": 300,
+                            "EvaluationPeriods": 1,
+                            "ComparisonOperator":
+                            "GreaterThanOrEqualToThreshold",
+                            "Threshold": 8.0
+                        }
+                    }),
+                    "MessageAttributes": {
+                        "Test": {
+                            "Type": "String",
+                            "Value": "TestString"
+                        },
+                        "TestBinary": {
+                            "Type": "Binary",
+                            "Value": "TestBinary"
+                        }
+                    },
+                    "Type": "Notification",
+                    "UnsubscribeUrl": "EXAMPLE",
+                    "TopicArn": topic_ARN,
+                    "Subject": "OK: sns-slack-test-from-cloudwatch-total-cpu"
+                }
+            }
+        ]
     }
-  ]
-}""")
     print('running locally')
     print(lambda_handler(sns_event_template, None))
