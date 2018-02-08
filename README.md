@@ -161,6 +161,6 @@ aws lambda publish-version \
 ```
 
 ### Lambda Resources
-https://docs.aws.amazon.com/lambda/latest/dg/python-lambda.html
-https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html
-https://docs.aws.amazon.com/lambda/latest/dg/versioning-aliases.html
+<https://docs.aws.amazon.com/lambda/latest/dg/python-lambda.html>
+<https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html>
+<https://docs.aws.amazon.com/lambda/latest/dg/versioning-aliases.html>
