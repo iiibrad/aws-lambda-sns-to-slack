@@ -22,7 +22,7 @@ __email__ = "robb@pandastrike.com"
 __status__ = "Production"
 
 DEFAULT_USERNAME = 'AWS Lambda'
-DEFAULT_CHANNEL = '#webhook-tests'
+DEFAULT_CHANNELS = ['#webhook-tests']
 
 
 def get_slack_emoji(event_src, topic_name, event_cond='default'):
@@ -69,13 +69,18 @@ def get_slack_username(event_src):
         return DEFAULT_USERNAME
 
 
-def get_slack_channel(region, event_src, topic_name, channel_map):
-    '''Map region and event type to Slack channel name
+def get_slack_channels(region, event_src, topic_name, channel_map):
+    '''Map region and event type to Slack channel name(s)
     '''
     try:
-        return channel_map[topic_name]
+        channels = channel_map[topic_name]
     except KeyError:
-        return DEFAULT_CHANNEL
+        channels = DEFAULT_CHANNELS
+
+    if not isinstance(channels, list):
+        channels = [channels]
+
+    return channels
 
 
 def autoscaling_capacity_change(cause):
@@ -91,7 +96,7 @@ def lambda_handler(event, context):
     '''
     if 'LAMBDA_CONFIG' in os.environ:
         config = json.loads(os.getenv('LAMBDA_CONFIG'))
-    else:    
+    else:
         with open('config.json') as f:
             config = json.load(f)
 
@@ -173,10 +178,10 @@ def lambda_handler(event, context):
             "fields": [{
                 "title": "Source",
                 "value": json_msg['Event Source']
-                },{
+            }, {
                 "title": "Message",
                 "value": json_msg['Event Message']
-                }]}]
+            }]}]
         if json_msg.get('Identifier Link'):
             attachments.append({
                 "text": "Details",
@@ -203,16 +208,24 @@ def lambda_handler(event, context):
 
     channel_map = config['channel_map']
 
+    channels = get_slack_channels(region, event_src, topic_name, channel_map)
+
     payload = {
         'text': message,
-        'channel': get_slack_channel(region, event_src, topic_name, channel_map),
         'username': get_slack_username(event_src),
-        'icon_emoji': get_slack_emoji(event_src, topic_name, event_cond.lower())}
+        'icon_emoji': get_slack_emoji(
+            event_src,
+            topic_name,
+            event_cond.lower()
+        )}
     if attachments:
         payload['attachments'] = attachments
-    print('DEBUG:', payload)
-    r = requests.post(WEBHOOK_URL, json=payload)
+    for channel in channels:
+        payload['channel'] = channel
+        print('DEBUG:', payload)
+        r = requests.post(WEBHOOK_URL, json=payload)
     return r.status_code
+
 
 # Test locally
 if __name__ == '__main__':

@@ -38,7 +38,7 @@ Copy `config.json.example` to `config.json` and update the `encrypted_webhook_ur
 Slack channels have a limit of 21 characters.
 You'll want to namespace your channels accordingly.
 `channel_map` setting is the mapping from the SNS topic name to the channel name.
-
+The value can be either a string or a list of strings, to send identical alerts to multiple Slack channels.
 
 ### Emoji
 
