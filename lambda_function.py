@@ -35,11 +35,11 @@ def get_slack_emoji(event_src, topic_name, event_cond='default'):
             'notices': {
                 'ok': ':ok:',
                 'alarm': ':fire:',
-                'insuffcient_data': ':question:'},
+                'insufficient_data': ':question:'},
             'alerts': {
                 'ok': ':ok:',
                 'alarm': ':fire:',
-                'insuffcient_data': ':question:'}},
+                'insufficient_data': ':question:'}},
         'elasticache': {
             'notices': {'default': ':stopwatch:'}},
         'rds': {
