@@ -113,7 +113,7 @@ The ARN: *arn:aws:iam::<AWS_ACCOUNT_ID>:role/lambda_basic_execution*
 
 #### Create a .zip file of SNS-to-Slack for upload to Lambda
 
-If you using a virtualenv (you should), then the following command will upload a .zip file of the SNS-to-Slack Lambda function using the AWS CLI and a credential profile named `my_profile`:
+If you using a virtualenv (you should), then the following command will upload a .zip file of the SNS-to-Slack Lambda function using the AWS CLI:
 
 ```shell
 zip -u sns-to-slack.zip lambda_function.py config.json
